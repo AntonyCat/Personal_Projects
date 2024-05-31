@@ -29,7 +29,7 @@ when the ship is placed, the location of the ship is added into a list ```ship_l
 The battlefield is a multidimensional array. When the player enters coordinates to fire a missile, the class converts that user input into a location on the array. The program checks if there is a ship there and then changes the element accordingly.
 
 ### The CPU:
-When attacking, a random location is chosen within range of the array row and column size using the ```random``` library. This is then checked against the players battleground whether it hits a ship, hits a location that has already been fired at or misses. If the generated location is one that has already been fired at, another location is randomly generated. If it misses and hits open water, that location is marked as _ _checked_ _ (aka. '''/''') and next turn another random _ _free_ _ location is chosen in the array.
+When attacking, a random location is chosen within range of the array row and column size using the ```random``` library. This is then checked against the players battleground whether it hits a ship, hits a location that has already been fired at or misses. If the generated location is one that has already been fired at, another location is randomly generated. If it misses and hits open water, that location is marked as _ _checked_ _ (aka. ```/```) and next turn another random _ _free_ _ location is chosen in the array.
 
 If the location chosen is occupied by the players ship, that Missile hits and on the next computers turn, several things happen:
 1. That hit location is saved in a variable ```last_hit_coords```
