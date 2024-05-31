@@ -12,6 +12,7 @@ class CPU_Placement(BattleGround):
         self.ship_sunk_last_turn_ = False
         self.last_hit_coords = list([0,0])
         self.surrounding_options_= []
+        self.package=[]
         
     def detValidLocations(self, ship):
         self.ship_copy_ = ship.ship_
@@ -31,7 +32,7 @@ class CPU_Placement(BattleGround):
                     # if rowIT + len(ship.ship_) > len(self.tempbattleground) and rowIT != 0 or element == "#":
                     if rowIT + len(ship.ship_) > len(self.tempbattleground) or element == "#":    
                         self.tempbattleground[rowIT][elementIT] = "X"
-                
+              
     def checkValidLocPlaceShip(self):
         self.valid_coords_ = list([0,0])
         while True:
@@ -71,8 +72,40 @@ class CPU_Placement(BattleGround):
             self.environment_ = copy.deepcopy(temp)
             # self.battlegroundCPY = copy.deepcopy(temp)
                 
-        return invalid_loc
+        return invalid_loc  
 
+    def validlocationsPackage(self):
+        for rowIT,row in enumerate(self.player_battleground_):
+            count = 0
+
+            for eleIT,element in enumerate(row):
+                if element == '~':
+                    count +=1
+                else:
+                    count = 0
+                if count>=3:
+                    self.package.append([rowIT,eleIT])
+                    self.package.append([rowIT,eleIT-1])
+                    self.package.append([rowIT,eleIT-2])
+                    count = 0
+
+            
+        for colIT in range(len(self.player_battleground_[0])):
+            count = 0
+            for rowIT in range(len(self.player_battleground_)):
+                if self.player_battleground_[rowIT][colIT]=='~':
+                    count+=1 
+                else:
+                    count = 0
+                if count>=3:
+                    self.package.append([rowIT,colIT])
+                    self.package.append([rowIT-1,colIT])  
+                    self.package.append([rowIT-2,colIT]) 
+                    count = 0
+
+                
+   
+    
     def attack(self, opposition):
         # print("restarting attack")            
         # print("boolean check to hit last turn ",self.hit_last_turn_) 
@@ -80,13 +113,21 @@ class CPU_Placement(BattleGround):
         if self.hit_last_turn_ == False:
             while True:
                 self.attacked_ = [random.randint(0,8),random.randint(0,8)]
+                
+                # self.validlocationsPackage()
+                # print("SIZE OF PACKAGE LIST ", len(self.package))
+                # attack_int = random.randint(0,len(self.package)-1)
+                # self.attacked_ = copy.copy(self.package[attack_int])
+                # self.package.clear()
+                
+                
                 # print("random shooting: ",self.attacked_)
-                if self.player_battleground_[self.attacked_[0]][self.attacked_[1]] != ('X' or '/'):
+                if self.player_battleground_[self.attacked_[0]][self.attacked_[1]] not in ('X','/'):
                     if opposition.environment_[self.attacked_[0]][self.attacked_[1]] == '#':
                         self.player_battleground_[self.attacked_[0]][self.attacked_[1]] = 'X'
                         opposition.environment_[self.attacked_[0]][self.attacked_[1]] = 'X'
                         time.sleep(0.5)
-                        print("THE ENEMY HAS FIRED A TORPEDO AT ",self.attacked_)
+                        print("THE ENEMY HAS FIRED A TORPEDO AT {}{}".format(self.abc_vals[self.attacked_[1]], self.attacked_[0]))
                         time.sleep(1)
                         print("CONFIRMED HIT\n")
                         time.sleep(0.5)
@@ -97,7 +138,7 @@ class CPU_Placement(BattleGround):
                     elif opposition.environment_[self.attacked_[0]][self.attacked_[1]] == '~':
                         self.player_battleground_[self.attacked_[0]][self.attacked_[1]] = '/'
                         time.sleep(0.5)
-                        print("THE ENEMY HAS FIRED A TORPEDO AT ",self.attacked_)
+                        print("THE ENEMY HAS FIRED A TORPEDO AT {}{}".format(self.abc_vals[self.attacked_[1]], self.attacked_[0]))
                         time.sleep(1)
                         print("MISS!\n")
                         time.sleep(0.5)
@@ -106,36 +147,36 @@ class CPU_Placement(BattleGround):
                         print("choosing another location")
         
         # elif self.hit_last_turn_ == True and not opposition.checkForSunkenShip():
-        elif self.hit_last_turn_ == True:  
-            print("trueeeee")  
-            placed = False
-            while not placed:
+        elif self.hit_last_turn_ == True:   
+            element_placed = False
+            while not element_placed:
                 self.checkAroundHit()
                 for element in self.surrounding_options_:
-                    if self.player_battleground_[element[0]][element[1]] != 'X' and self.player_battleground_[element[0]][element[1]] != '/' and opposition.environment_[element[0]][element[1]] == '#':
+                    if self.player_battleground_[element[0]][element[1]] not in ('X','/') and opposition.environment_[element[0]][element[1]] == '#':
                         self.player_battleground_[element[0]][element[1]] = 'X'
                         opposition.environment_[element[0]][element[1]] = 'X'
                         time.sleep(0.5)
-                        print("THE ENEMY HAS FIRED A TORPEDO AT ",self.attacked_)
+                        print("THE ENEMY HAS FIRED A TORPEDO AT {}{}".format(self.abc_vals[element[1]], element[0]))
                         time.sleep(1)
                         print("CONFIRMED HIT\n")
                         time.sleep(0.5)
                         self.last_hit_coords = copy.copy(element)
-                        placed = True
+                        element_placed = True
                         break
-                    elif self.player_battleground_[element[0]][element[1]] != 'X' and self.player_battleground_[element[0]][element[1]] != '/' and opposition.environment_[element[0]][element[1]] == '~':
+                    elif self.player_battleground_[element[0]][element[1]] not in ('X','/') and opposition.environment_[element[0]][element[1]] == '~':
                         self.player_battleground_[element[0]][element[1]] = '/'
-                        print("THE ENEMY HAS FIRED A TORPEDO AT ",self.attacked_)
+                        print("THE ENEMY HAS FIRED A TORPEDO AT {}{}".format(self.abc_vals[element[1]],element[0]))
+                        print(self.abc_vals)
                         time.sleep(1)
                         print("MISS!\n")
                         time.sleep(0.5)
-                        placed = True
+                        element_placed = True
                         # self.hit_last_turn_ = False
                         break
                     elif element == self.surrounding_options_[-1]:
-                        print("in the else statement")
+                        # print("in the else statement")
                         self.last_hit_coords = copy.copy(self.first_place_hit) #fix this`
-                        placed = True
+                        element_placed = True
                         time.sleep(0.5)
                         
         if opposition.checkForSunkenShip():

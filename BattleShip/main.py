@@ -12,7 +12,7 @@ from CPUBattlePlacement import CPU_Placement
 # ship_size = 5   #for testing
 
 ###TOGGLES FOR GAMEPLAY########################
-cpu_ships_visible = False  #Set True to print CPU's ship locations on map
+cpu_ships_visible = True  #Set True to print CPU's ship locations on map
 
 ###############################################
 # """
@@ -49,12 +49,17 @@ def main():
         player.attack(enemy)
         print("CPU Map:")
         printMap(enemy.environment_,cpu_ships_visible)
+        
         time.sleep(0.5)
         if enemy.checkEndOfGame():
             print("BATTLE WON! YOU HAVE SUNK ALL ENEMY SHIPS!")
             break
-        print("enemy attack?")
         enemy.attack(player)
+        
+        ##DEBUGGING
+        print("CPU FIRING LOCATIONS:")
+        printMap(enemy.player_battleground_,cpu_ships_visible)
+        ###########
         
         print("YOUR BATTLEFIELD:")
         printMap(player.environment_,True)
@@ -79,7 +84,6 @@ def createAndPlaceShip(player,ship_num):
     while True:
             ship = Ship(ship_num+3)
             # ship = Ship(int(input("Size of Ship: ")))
-            # detValidLocations(area,ship)
             player.chooseDirAndCoords(ship)
             break
             
